@@ -1,7 +1,7 @@
 {
-  "name": "FinFlow - Catatan Keuangan & Budgeting",
+  "name": "FinFlow - Manajemen Keuangan & Anggaran",
   "short_name": "FinFlow",
-  "description": "Aplikasi pencatatan keuangan harian, multi-dompet, talangan piutang dan budgeting bulanan offline.",
+  "description": "Aplikasi manajemen keuangan pribadi, alokasi anggaran bulanan, multi-rekening, dan pelacak utang piutang profesional offline.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#090d16",

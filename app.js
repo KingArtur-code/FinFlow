@@ -1,5 +1,5 @@
 /**
- * FinFlow (Dompetku) - Core Application Logic
+ * FinFlow - Manajemen Keuangan Profesional
  * Offline-first Personal Finance & Budgeting PWA
  */
 
@@ -7,118 +7,58 @@
   'use strict';
 
   // --- STORAGE KEYS ---
-  const STORAGE_KEY = 'finflow_data_v1';
+  const STORAGE_KEY = 'finflow_data_v2';
 
-  // --- DEFAULT CATEGORIES ---
+  // --- DEFAULT CATEGORIES (PROFESSIONAL BASELINE) ---
   const DEFAULT_CATEGORIES = [
-    { id: 'cat_food', name: 'Makanan & Minuman', type: 'expense', icon: '🍜', color: '#f59e0b' },
-    { id: 'cat_transport', name: 'Transportasi', type: 'expense', icon: '🛵', color: '#06b6d4' },
-    { id: 'cat_shopping', name: 'Belanja', type: 'expense', icon: '🛍️', color: '#ec4899' },
-    { id: 'cat_bills', name: 'Tagihan & Utilitas', type: 'expense', icon: '⚡', color: '#eab308' },
-    { id: 'cat_entertainment', name: 'Hiburan & Hobi', type: 'expense', icon: '🎬', color: '#a855f7' },
+    { id: 'cat_food', name: 'Konsumsi & Makanan', type: 'expense', icon: '🍽️', color: '#f59e0b' },
+    { id: 'cat_groceries', name: 'Kebutuhan Rumah Tangga', type: 'expense', icon: '🛒', color: '#ec4899' },
+    { id: 'cat_transport', name: 'Transportasi & Bahan Bakar', type: 'expense', icon: '🚗', color: '#06b6d4' },
+    { id: 'cat_bills', name: 'Tagihan, Utilitas & Internet', type: 'expense', icon: '⚡', color: '#eab308' },
+    { id: 'cat_personal', name: 'Perawatan Pribadi & Gaya Hidup', type: 'expense', icon: '✂️', color: '#3b82f6' },
     { id: 'cat_health', name: 'Kesehatan & Medis', type: 'expense', icon: '💊', color: '#10b981' },
-    { id: 'cat_other_exp', name: 'Lain-lain', type: 'expense', icon: '📦', color: '#64748b' },
-    { id: 'cat_salary', name: 'Gaji & Honor', type: 'income', icon: '💼', color: '#10b981' },
-    { id: 'cat_business', name: 'Bisnis & Penjualan', type: 'income', icon: '📈', color: '#3b82f6' },
-    { id: 'cat_gift', name: 'Hadiah / Bonus', type: 'income', icon: '🎁', color: '#f43f5e' },
-    { id: 'cat_other_inc', name: 'Pemasukan Lain', type: 'income', icon: '✨', color: '#8b5cf6' }
+    { id: 'cat_entertainment', name: 'Hiburan & Hobi', type: 'expense', icon: '🎬', color: '#a855f7' },
+    { id: 'cat_education', name: 'Pendidikan & Pengembangan Diri', type: 'expense', icon: '📚', color: '#6366f1' },
+    { id: 'cat_donation', name: 'Donasi, Zakat & Sosial', type: 'expense', icon: '🤲', color: '#14b8a6' },
+    { id: 'cat_other_exp', name: 'Pengeluaran Lainnya', type: 'expense', icon: '📦', color: '#64748b' },
+    { id: 'cat_salary', name: 'Pendapatan Pokok / Gaji', type: 'income', icon: '💼', color: '#10b981' },
+    { id: 'cat_business', name: 'Hasil Usaha & Bisnis', type: 'income', icon: '📈', color: '#3b82f6' },
+    { id: 'cat_investment', name: 'Investasi, Dividen & Bunga', type: 'income', icon: '🌱', color: '#8b5cf6' },
+    { id: 'cat_bonus', name: 'Bonus, Tunjangan & Hadiah', type: 'income', icon: '🎁', color: '#f59e0b' },
+    { id: 'cat_other_inc', name: 'Pemasukan Lainnya', type: 'income', icon: '✨', color: '#06b6d4' }
   ];
 
-  // --- INITIAL SAMPLE DATA (Realistic Indonesian Context) ---
-  const INITIAL_SAMPLE_STATE = {
+  // --- CLEAN INITIAL STATE (NO DUMMY TRANSACTIONS) ---
+  const CLEAN_INITIAL_STATE = {
     wallets: [
-      { id: 'w_bca', name: 'BCA Utama', type: 'bank', balance: 5200000, initialBalance: 5200000, color: '#0284c7' },
-      { id: 'w_cash', name: 'Dompet Tunai', type: 'cash', balance: 450000, initialBalance: 450000, color: '#10b981' },
-      { id: 'w_gopay', name: 'GoPay', type: 'ewallet', balance: 175000, initialBalance: 175000, color: '#0d9488' },
-      { id: 'w_bibit', name: 'Tabungan Bibit', type: 'savings', balance: 3500000, initialBalance: 3500000, color: '#8b5cf6' }
+      { id: 'w_bank', name: 'Rekening Bank', type: 'bank', balance: 0, initialBalance: 0, color: '#0284c7' },
+      { id: 'w_cash', name: 'Kas Tunai', type: 'cash', balance: 0, initialBalance: 0, color: '#10b981' },
+      { id: 'w_ewallet', name: 'Dompet Digital', type: 'ewallet', balance: 0, initialBalance: 0, color: '#0d9488' }
     ],
     categories: DEFAULT_CATEGORIES,
-    transactions: [
-      {
-        id: 'tx_demo_1',
-        type: 'income',
-        amount: 7000000,
-        walletId: 'w_bca',
-        categoryId: 'cat_salary',
-        note: 'Gaji Bulanan',
-        date: getCurrentDateFormatted(),
-        time: '09:00'
-      },
-      {
-        id: 'tx_demo_2',
-        type: 'expense',
-        amount: 32000,
-        walletId: 'w_cash',
-        categoryId: 'cat_food',
-        note: 'Nasi Padang Rendang + Es Teh',
-        date: getCurrentDateFormatted(),
-        time: '12:30'
-      },
-      {
-        id: 'tx_demo_3',
-        type: 'expense',
-        amount: 25000,
-        walletId: 'w_gopay',
-        categoryId: 'cat_transport',
-        note: 'Gojek ke Kantor',
-        date: getCurrentDateFormatted(),
-        time: '08:15'
-      },
-      {
-        id: 'tx_demo_4',
-        type: 'expense',
-        amount: 350000,
-        walletId: 'w_bca',
-        categoryId: 'cat_shopping',
-        note: 'Belanja Bulanan Supermarket',
-        date: getCurrentDateFormatted(),
-        time: '19:40'
-      },
-      {
-        id: 'tx_demo_5',
-        type: 'debt_lend',
-        amount: 50000,
-        walletId: 'w_bca',
-        note: 'Talangan Makan Siang Budi',
-        personName: 'Budi Santoso',
-        debtId: 'debt_demo_1',
-        date: getCurrentDateFormatted(),
-        time: '13:00'
-      }
-    ],
-    debts: [
-      {
-        id: 'debt_demo_1',
-        personName: 'Budi Santoso',
-        originalAmount: 50000,
-        remainingAmount: 50000,
-        walletId: 'w_bca',
-        note: 'Talangan Makan Siang Mie Ayam + Minum',
-        date: getCurrentDateFormatted(),
-        dueDate: '',
-        status: 'unpaid',
-        repayments: []
-      }
-    ],
-    budgets: {
-      monthlyGlobal: 4000000,
-      categoryBudgets: {
-        cat_food: 1500000,
-        cat_transport: 500000,
-        cat_shopping: 800000,
-        cat_bills: 600000,
-        cat_entertainment: 350000
-      }
-    },
+    transactions: [], // 100% Bersih tanpa riwayat palsu
+    debts: [],        // 100% Bersih
+    budgetsByPeriod: {}, // { "2026-10": { global: 0, categories: { [catId]: 0 } } }
     settings: {
-      hideBalance: false
+      hideBalance: false,
+      activePeriod: ''
     }
   };
 
   // --- STATE ---
   let appState = null;
+  let currentPeriod = getCurrentPeriodString(); // "YYYY-MM"
+  let activeDebtSubtab = 'receivable'; // 'receivable' (Piutang) or 'payable' (Utang)
+  let activeDebtFilter = 'unpaid';     // 'unpaid' or 'paid'
 
   // --- UTILS ---
+  function getCurrentPeriodString() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+  }
+
   function getCurrentDateFormatted() {
     const now = new Date();
     const y = now.getFullYear();
@@ -130,6 +70,17 @@
   function getCurrentTimeFormatted() {
     const now = new Date();
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  }
+
+  function formatPeriodDisplay(periodStr) {
+    if (!periodStr) return '';
+    const parts = periodStr.split('-');
+    if (parts.length === 2) {
+      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const mIdx = parseInt(parts[1], 10) - 1;
+      return `${months[mIdx]} ${parts[0]}`;
+    }
+    return periodStr;
   }
 
   function formatRupiah(num) {
@@ -159,37 +110,52 @@
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
   }
 
+  function getShiftedPeriod(periodStr, shiftMonths) {
+    const parts = periodStr.split('-');
+    let year = parseInt(parts[0], 10);
+    let month = parseInt(parts[1], 10) - 1;
+
+    const date = new Date(year, month + shiftMonths, 1);
+    const newY = date.getFullYear();
+    const newM = String(date.getMonth() + 1).padStart(2, '0');
+    return `${newY}-${newM}`;
+  }
+
   // --- PERSISTENCE ---
   function loadState() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         appState = JSON.parse(saved);
-        // Ensure structure backward compatibility
-        if (!appState.budgets) appState.budgets = INITIAL_SAMPLE_STATE.budgets;
+        if (!appState.wallets || appState.wallets.length === 0) appState.wallets = CLEAN_INITIAL_STATE.wallets;
+        if (!appState.categories || appState.categories.length === 0) appState.categories = DEFAULT_CATEGORIES;
+        if (!appState.transactions) appState.transactions = [];
         if (!appState.debts) appState.debts = [];
-        if (!appState.categories) appState.categories = DEFAULT_CATEGORIES;
+        if (!appState.budgetsByPeriod) appState.budgetsByPeriod = {};
         if (!appState.settings) appState.settings = { hideBalance: false };
       } else {
-        appState = JSON.parse(JSON.stringify(INITIAL_SAMPLE_STATE));
+        // First-time install: 100% clean state
+        appState = JSON.parse(JSON.stringify(CLEAN_INITIAL_STATE));
         saveState();
       }
     } catch (e) {
-      console.error('Failed to load state, fallback to sample', e);
-      appState = JSON.parse(JSON.stringify(INITIAL_SAMPLE_STATE));
+      console.error('Gagal membaca data dari memori lokal', e);
+      appState = JSON.parse(JSON.stringify(CLEAN_INITIAL_STATE));
     }
+
+    currentPeriod = getCurrentPeriodString();
   }
 
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
     } catch (e) {
-      console.error('Failed to save state to localStorage', e);
-      showToast('Gagal menyimpan perubahan ke memori!', 'error');
+      console.error('Gagal menyimpan perubahan ke memori', e);
+      showToast('Gagal menyimpan data ke memori perangkat!', 'error');
     }
   }
 
-  // --- TOAST SYSTEM ---
+  // --- TOAST NOTIFICATIONS ---
   function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -217,23 +183,18 @@
     }, 3200);
   }
 
-  // --- CALCULATION ENGINE ---
+  // --- CALCULATIONS & STATS ---
   function calculateTotalNetWorth() {
     return appState.wallets.reduce((sum, w) => sum + (Number(w.balance) || 0), 0);
   }
 
-  function getMonthStats(targetYearMonth) {
-    if (!targetYearMonth) {
-      const now = new Date();
-      targetYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    }
-
+  function getPeriodStats(targetPeriod) {
     let income = 0;
     let expense = 0;
     const categoryTotals = {};
 
     appState.transactions.forEach(tx => {
-      if (!tx.date || !tx.date.startsWith(targetYearMonth)) return;
+      if (!tx.date || !tx.date.startsWith(targetPeriod)) return;
 
       const amt = Number(tx.amount) || 0;
       if (tx.type === 'income') {
@@ -248,29 +209,68 @@
       }
     });
 
-    return { income, expense, categoryTotals, targetYearMonth };
+    return { income, expense, categoryTotals, targetPeriod };
   }
 
-  function getUnpaidDebtsTotal() {
-    return appState.debts
-      .filter(d => d.status !== 'paid')
-      .reduce((sum, d) => sum + (Number(d.remainingAmount) || 0), 0);
+  function getPeriodBudget(periodStr) {
+    if (!appState.budgetsByPeriod) appState.budgetsByPeriod = {};
+    if (!appState.budgetsByPeriod[periodStr]) {
+      appState.budgetsByPeriod[periodStr] = {
+        global: 0,
+        categories: {}
+      };
+    }
+    return appState.budgetsByPeriod[periodStr];
   }
 
-  function getUnpaidDebtsCount() {
-    return appState.debts.filter(d => d.status !== 'paid').length;
+  function getDebtsSummary() {
+    let receivableTotal = 0; // Piutang belum lunas
+    let payableTotal = 0;    // Utang belum lunas
+    let receivableCount = 0;
+    let payableCount = 0;
+
+    appState.debts.forEach(d => {
+      if (d.status !== 'paid') {
+        const remaining = Number(d.remainingAmount) || 0;
+        if (d.debtType === 'payable') {
+          payableTotal += remaining;
+          payableCount++;
+        } else {
+          receivableTotal += remaining;
+          receivableCount++;
+        }
+      }
+    });
+
+    return { receivableTotal, payableTotal, receivableCount, payableCount };
   }
 
-  // --- RENDERERS ---
+  // --- RENDER FUNCTIONS ---
 
-  // 1. Dashboard Render
+  // 1. Dashboard View
   function renderDashboard() {
     const netWorth = calculateTotalNetWorth();
-    const now = new Date();
-    const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const stats = getMonthStats(currentYearMonth);
+    const stats = getPeriodStats(currentPeriod);
+    const budgetConfig = getPeriodBudget(currentPeriod);
 
-    // Dompet Induk Card
+    // Period Display & Badge
+    const realPeriod = getCurrentPeriodString();
+    document.getElementById('dash-period-text').textContent = formatPeriodDisplay(currentPeriod);
+    const badge = document.getElementById('dash-period-badge');
+    if (currentPeriod === realPeriod) {
+      badge.className = 'badge badge-safe period-status-badge';
+      badge.textContent = 'Periode Aktif';
+    } else if (currentPeriod > realPeriod) {
+      badge.className = 'badge badge-warning period-status-badge';
+      badge.textContent = 'Periode Mendatang';
+    } else {
+      badge.className = 'badge period-status-badge';
+      badge.style.background = 'rgba(255,255,255,0.08)';
+      badge.style.color = 'var(--text-muted)';
+      badge.textContent = 'Arsip Periode';
+    }
+
+    // Net Worth display
     const masterElem = document.getElementById('master-net-worth');
     if (appState.settings.hideBalance) {
       masterElem.textContent = '••••••••';
@@ -281,13 +281,8 @@
     document.getElementById('dash-month-income').textContent = formatRupiah(stats.income);
     document.getElementById('dash-month-expense').textContent = formatRupiah(stats.expense);
 
-    // Header date display
-    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    document.getElementById('header-date-label').textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-    document.getElementById('active-month-badge').textContent = `${monthNames[now.getMonth()]}`;
-
-    // Monthly Budget Bar
-    const globalBudget = appState.budgets.monthlyGlobal || 0;
+    // Budget Overview Progress
+    const globalBudget = budgetConfig.global || 0;
     const spent = stats.expense;
     const remaining = Math.max(0, globalBudget - spent);
     const percentSpent = globalBudget > 0 ? Math.min(100, Math.round((spent / globalBudget) * 100)) : 0;
@@ -302,29 +297,33 @@
     const budgetBadge = document.getElementById('budget-status-badge');
     if (spent > globalBudget && globalBudget > 0) {
       budgetBadge.className = 'badge badge-danger';
-      budgetBadge.textContent = 'Over Budget!';
-    } else if (percentSpent > 75) {
-      budgetBadge.className = 'badge badge-warning';
-      budgetBadge.textContent = `${100 - percentSpent}% Tersisa`;
-    } else {
+      budgetBadge.textContent = 'Melebihi Anggaran';
+    } else if (globalBudget === 0) {
       budgetBadge.className = 'badge badge-safe';
-      budgetBadge.textContent = `${100 - percentSpent}% Tersisa`;
+      budgetBadge.textContent = 'Belum Diatur';
+    } else {
+      budgetBadge.className = percentSpent > 75 ? 'badge badge-warning' : 'badge badge-safe';
+      budgetBadge.textContent = `${100 - percentSpent}% Tersedia`;
     }
 
-    // Safe Daily Spending Calculation
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const daysLeft = Math.max(1, daysInMonth - now.getDate() + 1);
+    // Daily Cap (Aman Belanja)
+    const now = new Date();
+    const periodParts = currentPeriod.split('-');
+    const daysInMonth = new Date(parseInt(periodParts[0], 10), parseInt(periodParts[1], 10), 0).getDate();
+    let daysLeft = daysInMonth;
+    if (currentPeriod === realPeriod) {
+      daysLeft = Math.max(1, daysInMonth - now.getDate() + 1);
+    }
     const safeDaily = globalBudget > 0 ? Math.max(0, Math.floor(remaining / daysLeft)) : 0;
     document.getElementById('budget-safe-daily-txt').textContent = `${formatRupiah(safeDaily)} / hari`;
 
-    // Render Wallets Carousel
+    // Wallets Carousel
     renderWalletsCarousel();
 
-    // Talangan Banner
-    const unpaidTotal = getUnpaidDebtsTotal();
-    const unpaidCount = getUnpaidDebtsCount();
-    document.getElementById('dash-debt-total').textContent = formatRupiah(unpaidTotal);
-    document.getElementById('dash-debt-count').textContent = `${unpaidCount} orang ngutang / ditalangi`;
+    // Utang & Piutang Banner
+    const debtsSummary = getDebtsSummary();
+    document.getElementById('dash-receivable-total').textContent = formatRupiah(debtsSummary.receivableTotal);
+    document.getElementById('dash-payable-total').textContent = formatRupiah(debtsSummary.payableTotal);
 
     // Recent Transactions
     renderRecentTransactions();
@@ -366,28 +365,23 @@
 
     html += `
       <div class="wallet-chip wallet-chip-add" id="dash-btn-add-wallet">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="16"></line>
           <line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
-        <span style="font-size: 0.72rem; font-weight: 700;">+ Dompet</span>
+        <span style="font-size: 0.72rem; font-weight: 700;">+ Akun</span>
       </div>
     `;
 
     container.innerHTML = html;
 
-    // Attach click listeners
     container.querySelectorAll('.wallet-chip[data-id]').forEach(chip => {
-      chip.addEventListener('click', () => {
-        openEditWalletModal(chip.dataset.id);
-      });
+      chip.addEventListener('click', () => openEditWalletModal(chip.dataset.id));
     });
 
     const addBtn = document.getElementById('dash-btn-add-wallet');
-    if (addBtn) {
-      addBtn.addEventListener('click', () => openAddWalletModal());
-    }
+    if (addBtn) addBtn.addEventListener('click', () => openAddWalletModal());
   }
 
   function renderRecentTransactions() {
@@ -395,6 +389,7 @@
     if (!container) return;
 
     const recent = [...appState.transactions]
+      .filter(tx => tx.date && tx.date.startsWith(currentPeriod))
       .sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')))
       .slice(0, 5);
 
@@ -402,8 +397,8 @@
       container.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">📝</div>
-          <div class="empty-title">Belum ada transaksi</div>
-          <div class="empty-desc">Klik tombol (+) di bawah untuk mencatat pengeluaran atau pemasukan pertama Anda!</div>
+          <div class="empty-title">Belum ada mutasi pada periode ini</div>
+          <div class="empty-desc">Ketuk tombol (+) di bawah untuk mencatat pengeluaran atau pemasukan pertama Anda.</div>
         </div>
       `;
       return;
@@ -413,12 +408,12 @@
     attachTransactionItemEvents(container);
   }
 
-  // Helper to render single transaction item HTML
   function renderTransactionItemHtml(tx) {
     const isExpense = tx.type === 'expense';
     const isIncome = tx.type === 'income';
     const isTransfer = tx.type === 'transfer';
-    const isDebt = tx.type === 'debt_lend' || tx.type === 'debt_repay';
+    const isReceivable = tx.type === 'receivable_lend' || tx.type === 'receivable_repay';
+    const isPayable = tx.type === 'payable_borrow' || tx.type === 'payable_repay';
 
     let iconBox = '📦';
     let iconBg = 'rgba(255,255,255,0.06)';
@@ -428,7 +423,7 @@
     let amountClass = 'text-expense';
 
     const wallet = appState.wallets.find(w => w.id === tx.walletId);
-    const walletName = wallet ? wallet.name : 'Dompet';
+    const walletName = wallet ? wallet.name : 'Rekening';
 
     if (isExpense) {
       const cat = appState.categories.find(c => c.id === tx.categoryId);
@@ -450,20 +445,34 @@
       const targetWallet = appState.wallets.find(w => w.id === tx.targetWalletId);
       amountSign = '';
       amountClass = 'text-transfer';
-      subtitle = `Transfer: ${walletName} &rarr; ${targetWallet ? targetWallet.name : 'Dompet'}`;
-    } else if (isDebt) {
+      subtitle = `Transfer: ${walletName} &rarr; ${targetWallet ? targetWallet.name : 'Rekening'}`;
+    } else if (isReceivable) {
       iconBox = '🤝';
-      iconBg = 'var(--color-debt-bg)';
-      if (tx.type === 'debt_lend') {
+      iconBg = 'rgba(16, 185, 129, 0.15)';
+      if (tx.type === 'receivable_lend') {
         amountSign = '-';
         amountClass = 'text-debt';
-        title = `Talangi: ${tx.personName || 'Teman'}`;
-        subtitle = `${tx.note || 'Talangan'} • <span class="tx-wallet-badge">${walletName}</span>`;
+        title = `Piutang: ${tx.personName || 'Pihak Terkait'}`;
+        subtitle = `Dana dipinjamkan • <span class="tx-wallet-badge">${walletName}</span>`;
       } else {
         amountSign = '+';
         amountClass = 'text-income';
-        title = `Pelunasan: ${tx.personName || 'Teman'}`;
-        subtitle = `Uang kembali masuk ke • <span class="tx-wallet-badge">${walletName}</span>`;
+        title = `Pelunasan Piutang: ${tx.personName || 'Pihak Terkait'}`;
+        subtitle = `Diterima di • <span class="tx-wallet-badge">${walletName}</span>`;
+      }
+    } else if (isPayable) {
+      iconBox = '📑';
+      iconBg = 'rgba(244, 63, 94, 0.15)';
+      if (tx.type === 'payable_borrow') {
+        amountSign = '+';
+        amountClass = 'text-income';
+        title = `Pinjaman Diterima (Utang): ${tx.personName || 'Kreditur'}`;
+        subtitle = `Masuk ke • <span class="tx-wallet-badge">${walletName}</span>`;
+      } else {
+        amountSign = '-';
+        amountClass = 'text-expense';
+        title = `Pembayaran Utang: ${tx.personName || 'Kreditur'}`;
+        subtitle = `Dibayar dari • <span class="tx-wallet-badge">${walletName}</span>`;
       }
     }
 
@@ -495,14 +504,14 @@
         const tx = appState.transactions.find(t => t.id === id);
         if (!tx) return;
 
-        if (confirm(`Hapus transaksi "${tx.note || 'Transaksi'}" sebesar ${formatRupiah(tx.amount)}?`)) {
+        if (confirm(`Hapus catatan mutasi "${tx.note || 'Transaksi'}" sebesar ${formatRupiah(tx.amount)}?`)) {
           deleteTransaction(id);
         }
       });
     });
   }
 
-  // 2. Full Transactions List Tab Render
+  // 2. Transactions View
   function renderTransactionsTab() {
     const listContainer = document.getElementById('transactions-full-list');
     const searchVal = document.getElementById('tx-search-input').value.toLowerCase().trim();
@@ -510,31 +519,28 @@
     const walletFilter = document.getElementById('tx-wallet-filter').value;
     const timeFilter = document.getElementById('tx-time-filter').value;
 
-    const now = new Date();
     const todayStr = getCurrentDateFormatted();
-    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    // Filter transactions
     let filtered = appState.transactions.filter(tx => {
-      // Type filter
+      // Type
       if (typeFilter !== 'all') {
         if (typeFilter === 'debt') {
-          if (tx.type !== 'debt_lend' && tx.type !== 'debt_repay') return false;
+          if (!tx.type.startsWith('receivable_') && !tx.type.startsWith('payable_')) return false;
         } else if (tx.type !== typeFilter) {
           return false;
         }
       }
 
-      // Wallet filter
+      // Wallet
       if (walletFilter !== 'all' && tx.walletId !== walletFilter && tx.targetWalletId !== walletFilter) {
         return false;
       }
 
-      // Time filter
+      // Time
       if (timeFilter === 'today' && tx.date !== todayStr) return false;
-      if (timeFilter === 'month' && !tx.date.startsWith(currentMonthStr)) return false;
+      if (timeFilter === 'month' && !tx.date.startsWith(currentPeriod)) return false;
 
-      // Search filter
+      // Search
       if (searchVal) {
         const matchNote = (tx.note || '').toLowerCase().includes(searchVal);
         const matchPerson = (tx.personName || '').toLowerCase().includes(searchVal);
@@ -546,21 +552,19 @@
       return true;
     });
 
-    // Sort descending
     filtered.sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
 
     if (filtered.length === 0) {
       listContainer.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">🔍</div>
-          <div class="empty-title">Tidak ada transaksi ditemukan</div>
-          <div class="empty-desc">Coba sesuaikan kata kunci pencarian atau ganti filter kategori/dompet.</div>
+          <div class="empty-title">Tidak ada mutasi yang sesuai</div>
+          <div class="empty-desc">Silakan sesuaikan filter pencarian atau pilih periode lainnya.</div>
         </div>
       `;
       return;
     }
 
-    // Group by Date
     const grouped = {};
     filtered.forEach(tx => {
       const d = tx.date || 'Lainnya';
@@ -571,10 +575,10 @@
     let html = '';
     for (const [dateStr, txs] of Object.entries(grouped)) {
       let dateLabel = formatShortDate(dateStr);
-      if (dateStr === todayStr) dateLabel = 'Hari Ini - ' + dateLabel;
+      if (dateStr === todayStr) dateLabel = 'Hari Ini — ' + dateLabel;
 
-      const dayTotalExpense = txs.reduce((sum, t) => sum + (t.type === 'expense' ? Number(t.amount) : 0), 0);
-      const dayTotalIncome = txs.reduce((sum, t) => sum + (t.type === 'income' ? Number(t.amount) : 0), 0);
+      const dayTotalExpense = txs.reduce((sum, t) => sum + (t.type === 'expense' || t.type === 'receivable_lend' || t.type === 'payable_repay' ? Number(t.amount) : 0), 0);
+      const dayTotalIncome = txs.reduce((sum, t) => sum + (t.type === 'income' || t.type === 'receivable_repay' || t.type === 'payable_borrow' ? Number(t.amount) : 0), 0);
 
       html += `
         <div class="transaction-group">
@@ -594,13 +598,29 @@
     attachTransactionItemEvents(listContainer);
   }
 
-  // 3. Budget Tab Render
+  // 3. Budget & Category View
   function renderBudgetTab() {
-    const now = new Date();
-    const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const stats = getMonthStats(currentYearMonth);
+    const stats = getPeriodStats(currentPeriod);
+    const budgetConfig = getPeriodBudget(currentPeriod);
+    const realPeriod = getCurrentPeriodString();
 
-    const globalLimit = appState.budgets.monthlyGlobal || 0;
+    // Period Navigation
+    document.getElementById('budget-period-text').textContent = formatPeriodDisplay(currentPeriod);
+    const badge = document.getElementById('budget-period-badge');
+    if (currentPeriod === realPeriod) {
+      badge.className = 'badge badge-safe period-status-badge';
+      badge.textContent = 'Periode Aktif';
+    } else if (currentPeriod > realPeriod) {
+      badge.className = 'badge badge-warning period-status-badge';
+      badge.textContent = 'Perencanaan Anggaran';
+    } else {
+      badge.className = 'badge period-status-badge';
+      badge.style.background = 'rgba(255,255,255,0.08)';
+      badge.style.color = 'var(--text-muted)';
+      badge.textContent = 'Arsip Periode';
+    }
+
+    const globalLimit = budgetConfig.global || 0;
     const spent = stats.expense;
     const remaining = Math.max(0, globalLimit - spent);
     const percentSpent = globalLimit > 0 ? Math.min(100, Math.round((spent / globalLimit) * 100)) : 0;
@@ -616,52 +636,75 @@
     const badgeElem = document.getElementById('budget-page-badge');
     if (spent > globalLimit && globalLimit > 0) {
       badgeElem.className = 'badge badge-danger';
-      badgeElem.textContent = `Overbudget +${formatRupiah(spent - globalLimit)}`;
+      badgeElem.textContent = `Defisit +${formatRupiah(spent - globalLimit)}`;
+    } else if (globalLimit === 0) {
+      badgeElem.className = 'badge badge-safe';
+      badgeElem.textContent = 'Belum Diatur';
     } else {
       badgeElem.className = percentSpent > 75 ? 'badge badge-warning' : 'badge badge-safe';
-      badgeElem.textContent = `Tersisa ${100 - percentSpent}%`;
+      badgeElem.textContent = `Tersedia ${100 - percentSpent}%`;
     }
 
     // Days left calculator
-    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const daysLeft = Math.max(1, daysInMonth - now.getDate() + 1);
+    const now = new Date();
+    const periodParts = currentPeriod.split('-');
+    const daysInMonth = new Date(parseInt(periodParts[0], 10), parseInt(periodParts[1], 10), 0).getDate();
+    let daysLeft = daysInMonth;
+    if (currentPeriod === realPeriod) {
+      daysLeft = Math.max(1, daysInMonth - now.getDate() + 1);
+    }
     const safeDaily = globalLimit > 0 ? Math.max(0, Math.floor(remaining / daysLeft)) : 0;
-    document.getElementById('budget-days-left-desc').textContent = `Sisa waktu: ${daysLeft} hari menuju akhir bulan (${daysInMonth} total hari).`;
+    document.getElementById('budget-days-left-desc').textContent = `Sisa waktu: ${daysLeft} hari (${daysInMonth} hari total bulan ini).`;
     document.getElementById('budget-page-daily-safe').textContent = formatRupiah(safeDaily);
 
-    // Category Budgets List
+    // Render Categories List (Expenses and Income)
     const categoryListElem = document.getElementById('category-budgets-list');
-    const expenseCategories = appState.categories.filter(c => c.type === 'expense');
-
     let catHtml = '';
-    expenseCategories.forEach(cat => {
-      const catLimit = (appState.budgets.categoryBudgets && appState.budgets.categoryBudgets[cat.id]) || 0;
-      const catSpent = stats.categoryTotals[cat.id] || 0;
-      const catPercent = catLimit > 0 ? Math.min(100, Math.round((catSpent / catLimit) * 100)) : 0;
-      const catRemaining = Math.max(0, catLimit - catSpent);
+
+    appState.categories.forEach(cat => {
+      const isExpense = cat.type === 'expense';
+      const catBudget = (budgetConfig.categories && budgetConfig.categories[cat.id]) !== undefined
+        ? budgetConfig.categories[cat.id]
+        : (cat.budget || 0);
+
+      const actualSpent = stats.categoryTotals[cat.id] || 0;
+      const catPercent = catBudget > 0 ? Math.min(100, Math.round((actualSpent / catBudget) * 100)) : 0;
+      const catRemaining = Math.max(0, catBudget - actualSpent);
 
       catHtml += `
-        <div class="card" style="margin-bottom: 12px; padding: 14px 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 1.25rem;">${cat.icon}</span>
+        <div class="category-card-item">
+          <div class="cat-header-row">
+            <div class="cat-info-group">
+              <span style="font-size: 1.3rem;">${cat.icon || '🏷️'}</span>
               <div>
-                <strong style="font-size: 0.9rem;">${escapeHtml(cat.name)}</strong>
+                <strong style="font-size: 0.92rem; color: #fff;">${escapeHtml(cat.name)}</strong>
                 <div style="font-size: 0.72rem; color: var(--text-muted);">
-                  Limit: ${catLimit > 0 ? formatRupiah(catLimit) : 'Belum diatur'}
+                  ${isExpense ? 'Pos Pengeluaran' : 'Pos Pemasukan'} • Alokasi: ${catBudget > 0 ? formatRupiah(catBudget) : 'Belum ditentukan'}
                 </div>
               </div>
             </div>
-            <div style="text-align: right;">
-              <div class="amount-display text-expense" style="font-size: 0.92rem; font-weight: 700;">
-                ${formatRupiah(catSpent)}
-              </div>
-              <span style="font-size: 0.7rem; color: var(--text-subtle);">
-                ${catLimit > 0 ? `Sisa: ${formatRupiah(catRemaining)}` : 'Terpakai'}
-              </span>
+            <div class="cat-actions-group">
+              <button class="cat-mini-btn btn-edit-category" data-id="${cat.id}" title="Edit Kategori">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button class="cat-mini-btn danger btn-delete-category" data-id="${cat.id}" title="Hapus Kategori">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
             </div>
           </div>
-          ${catLimit > 0 ? `
+
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; margin-bottom: 6px;">
+            <span style="font-size: 0.74rem; color: var(--text-subtle);">Realisasi: <strong class="amount-display text-expense">${formatRupiah(actualSpent)}</strong></span>
+            ${catBudget > 0 ? `<span style="font-size: 0.74rem; color: var(--color-primary-light);">Sisa: <strong class="amount-display">${formatRupiah(catRemaining)}</strong></span>` : ''}
+          </div>
+
+          ${catBudget > 0 ? `
             <div class="progress-track" style="height: 6px; margin-bottom: 0;">
               <div class="progress-fill ${catPercent > 90 ? 'danger' : catPercent > 70 ? 'warning' : ''}" style="width: ${catPercent}%;"></div>
             </div>
@@ -671,9 +714,25 @@
     });
 
     categoryListElem.innerHTML = catHtml;
+
+    // Attach event listeners for category edit and delete
+    categoryListElem.querySelectorAll('.btn-edit-category').forEach(btn => {
+      btn.addEventListener('click', () => openEditCategoryModal(btn.dataset.id));
+    });
+
+    categoryListElem.querySelectorAll('.btn-delete-category').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const cat = appState.categories.find(c => c.id === id);
+        if (!cat) return;
+        if (confirm(`Hapus kategori "${cat.name}"? Transaksi yang sudah tercatat tidak akan terhapus.`)) {
+          deleteCategory(id);
+        }
+      });
+    });
   }
 
-  // 4. Wallets Tab Render
+  // 4. Wallets Tab View
   function renderWalletsTab() {
     const netWorth = calculateTotalNetWorth();
     document.getElementById('wallets-tab-net-worth').textContent = formatRupiah(netWorth);
@@ -711,7 +770,7 @@
               ${appState.settings.hideBalance ? '••••••' : formatRupiah(w.balance)}
             </div>
             <button class="btn btn-secondary btn-edit-wallet" data-id="${w.id}" style="padding: 4px 10px; font-size: 0.72rem; margin-top: 6px;">
-              Edit / Hapus
+              Ubah / Hapus
             </button>
           </div>
         </div>
@@ -725,31 +784,53 @@
     });
   }
 
-  // 5. Debt / Talangan Tab Render
-  let currentDebtFilter = 'unpaid';
-
+  // 5. Utang & Piutang Tab View
   function renderDebtTab() {
-    const unpaidTotal = getUnpaidDebtsTotal();
-    const unpaidCount = getUnpaidDebtsCount();
+    const summary = getDebtsSummary();
+    const isReceivable = activeDebtSubtab === 'receivable';
 
-    document.getElementById('debt-page-total').textContent = formatRupiah(unpaidTotal);
-    document.getElementById('debt-page-badge').textContent = `${unpaidCount} Orang Belum Lunas`;
+    const kpiLabel = document.getElementById('debt-kpi-label');
+    const kpiTotal = document.getElementById('debt-page-total');
+    const kpiBadge = document.getElementById('debt-page-badge');
+    const kpiDesc = document.getElementById('debt-kpi-desc');
+    const kpiCard = document.getElementById('debt-kpi-card');
+
+    if (isReceivable) {
+      kpiLabel.textContent = 'Total Piutang Belum Dilunasi (Hak Tagih)';
+      kpiLabel.style.color = '#34d399';
+      kpiTotal.textContent = formatRupiah(summary.receivableTotal);
+      kpiBadge.textContent = `${summary.receivableCount} Debitur`;
+      kpiBadge.className = 'badge badge-safe';
+      kpiDesc.textContent = 'Uang Anda yang dipinjam atau ditalangi untuk pihak lain. Saat menerima pelunasan, saldo rekening yang Anda pilih otomatis bertambah.';
+      kpiCard.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      kpiCard.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(20, 30, 51, 0.8) 100%)';
+    } else {
+      kpiLabel.textContent = 'Total Utang Belum Dibayar (Kewajiban)';
+      kpiLabel.style.color = '#fb7185';
+      kpiTotal.textContent = formatRupiah(summary.payableTotal);
+      kpiBadge.textContent = `${summary.payableCount} Kreditur`;
+      kpiBadge.className = 'badge badge-danger';
+      kpiDesc.textContent = 'Kewajiban pinjaman yang harus Anda bayarkan kepada pihak lain. Saat Anda membayar utang, saldo rekening yang Anda pilih otomatis terpotong.';
+      kpiCard.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+      kpiCard.style.background = 'linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(20, 30, 51, 0.8) 100%)';
+    }
 
     const container = document.getElementById('debts-list-container');
     const filtered = appState.debts.filter(d => {
-      if (currentDebtFilter === 'unpaid') return d.status !== 'paid';
+      if ((d.debtType || 'receivable') !== activeDebtSubtab) return false;
+      if (activeDebtFilter === 'unpaid') return d.status !== 'paid';
       return d.status === 'paid';
     });
 
     if (filtered.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">🤝</div>
-          <div class="empty-title">Tidak ada talangan ${currentDebtFilter === 'unpaid' ? 'yang belum lunas' : 'pada riwayat'}</div>
+          <div class="empty-icon">${isReceivable ? '🤝' : '📑'}</div>
+          <div class="empty-title">Tidak ada catatan ${isReceivable ? 'piutang' : 'utang'} ${activeDebtFilter === 'unpaid' ? 'yang belum lunas' : 'pada riwayat selesai'}</div>
           <div class="empty-desc">
-            ${currentDebtFilter === 'unpaid'
-              ? 'Hebat! Semua uang yang Anda pinjamkan/talangi sudah lunas kembali.'
-              : 'Belum ada riwayat pelunasan selesai.'}
+            ${activeDebtFilter === 'unpaid'
+              ? (isReceivable ? 'Seluruh piutang Anda telah dilunasi dengan tertib.' : 'Anda tidak memiliki kewajiban utang aktif saat ini.')
+              : 'Belum ada riwayat pelunasan pada kategori ini.'}
           </div>
         </div>
       `;
@@ -760,7 +841,7 @@
     filtered.forEach(debt => {
       const isPaid = debt.status === 'paid';
       const wallet = appState.wallets.find(w => w.id === debt.walletId);
-      const walletName = wallet ? wallet.name : 'Dompet';
+      const walletName = wallet ? wallet.name : 'Rekening';
 
       html += `
         <div class="debt-card">
@@ -769,30 +850,32 @@
               <span>👤 ${escapeHtml(debt.personName)}</span>
             </div>
             <span class="debt-status-tag ${isPaid ? 'debt-status-paid' : 'debt-status-unpaid'}">
-              ${isPaid ? 'Lunas' : debt.status === 'partial' ? 'Cicil Sebagian' : 'Belum Lunas'}
+              ${isPaid ? 'Lunas' : debt.status === 'partial' ? 'Sebagian' : 'Belum Lunas'}
             </span>
           </div>
 
           <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
-            ${escapeHtml(debt.note || 'Talangan sementara')}
+            ${escapeHtml(debt.note || (isReceivable ? 'Piutang' : 'Kewajiban Utang'))}
           </div>
 
           <div class="debt-details-row">
             <div>
-              <span style="font-size: 0.72rem; color: var(--text-subtle); display: block;">Sisa Belum Diganti:</span>
-              <div class="debt-amount-big amount-display">${formatRupiah(debt.remainingAmount)}</div>
+              <span style="font-size: 0.72rem; color: var(--text-subtle); display: block;">Sisa yang Belum Selesai:</span>
+              <div class="debt-amount-big amount-display" style="color: ${isReceivable ? 'var(--color-primary-light)' : '#fb7185'};">
+                ${formatRupiah(debt.remainingAmount)}
+              </div>
             </div>
             <div style="text-align: right;">
-              <span style="font-size: 0.72rem; color: var(--text-subtle); display: block;">Uang Awal Keluar:</span>
+              <span style="font-size: 0.72rem; color: var(--text-subtle); display: block;">Nominal Pokok Awal:</span>
               <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main);">${formatRupiah(debt.originalAmount)}</div>
-              <span class="tx-wallet-badge" style="font-size: 0.65rem;">dari ${walletName}</span>
+              <span class="tx-wallet-badge" style="font-size: 0.65rem;">Rekening: ${walletName}</span>
             </div>
           </div>
 
           <div class="debt-actions">
             ${!isPaid ? `
               <button class="btn btn-primary btn-repay-debt" data-id="${debt.id}" style="padding: 7px 14px; font-size: 0.8rem; flex: 1;">
-                💰 Catat Pelunasan (Ganti Uang)
+                ${isReceivable ? '💰 Catat Pelunasan (Uang Masuk)' : '💳 Catat Pembayaran (Uang Keluar)'}
               </button>
             ` : ''}
             <button class="btn btn-secondary btn-delete-debt" data-id="${debt.id}" style="padding: 7px 12px; font-size: 0.8rem;">
@@ -812,34 +895,31 @@
     container.querySelectorAll('.btn-delete-debt').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        if (confirm('Hapus catatan talangan ini?')) {
+        if (confirm('Hapus catatan ini?')) {
           deleteDebt(id);
         }
       });
     });
   }
 
-  // 6. Reports & Charts Render (100% Offline Canvas Rendering)
+  // 6. Reports View
   function renderReportsTab() {
     const monthSelect = document.getElementById('reports-month-select');
 
-    // Populate month dropdown if empty
     if (monthSelect.children.length === 0) {
       const now = new Date();
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 12; i++) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        const label = `${months[d.getMonth()]} ${d.getFullYear()}`;
         const opt = document.createElement('option');
         opt.value = val;
-        opt.textContent = label;
+        opt.textContent = formatPeriodDisplay(val);
         monthSelect.appendChild(opt);
       }
     }
 
-    const selectedMonth = monthSelect.value;
-    const stats = getMonthStats(selectedMonth);
+    const selectedMonth = monthSelect.value || currentPeriod;
+    const stats = getPeriodStats(selectedMonth);
 
     document.getElementById('reports-total-expense').textContent = formatRupiah(stats.expense);
 
@@ -847,7 +927,6 @@
     drawCashflowBarChart(stats);
   }
 
-  // Native HTML5 Canvas Donut Chart
   function drawDonutChart(stats) {
     const canvas = document.getElementById('category-donut-chart');
     const legend = document.getElementById('donut-legend-container');
@@ -873,7 +952,6 @@
       .sort((a, b) => b.amount - a.amount);
 
     if (total === 0 || catEntries.length === 0) {
-      // Draw empty placeholder circle
       ctx.beginPath();
       ctx.arc(w / 2, h / 2, 80, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
@@ -910,18 +988,16 @@
       startAngle = endAngle;
     });
 
-    // Center text (Total)
     ctx.fillStyle = '#94a3b8';
     ctx.font = '500 11px Plus Jakarta Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Total Keluar', centerX, centerY - 10);
+    ctx.fillText('Total Pengeluaran', centerX, centerY - 10);
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '700 14px Plus Jakarta Sans, sans-serif';
     ctx.fillText(formatRupiah(total), centerX, centerY + 10);
 
-    // Legend
     legend.innerHTML = catEntries.map(item => {
       const pct = Math.round((item.amount / total) * 100);
       return `
@@ -935,7 +1011,6 @@
     }).join('');
   }
 
-  // Native HTML5 Canvas Cash Flow Bar Chart
   function drawCashflowBarChart(stats) {
     const canvas = document.getElementById('cashflow-bar-chart');
     if (!canvas) return;
@@ -956,17 +1031,14 @@
     const xIncome = w * 0.3 - barWidth / 2;
     const xExpense = w * 0.7 - barWidth / 2;
 
-    // Draw Income Bar
     ctx.fillStyle = '#10b981';
     roundRect(ctx, xIncome, h - paddingBottom - incomeBarH, barWidth, incomeBarH, 8);
     ctx.fill();
 
-    // Draw Expense Bar
     ctx.fillStyle = '#f43f5e';
     roundRect(ctx, xExpense, h - paddingBottom - expenseBarH, barWidth, expenseBarH, 8);
     ctx.fill();
 
-    // Labels
     ctx.fillStyle = '#94a3b8';
     ctx.font = '600 12px Plus Jakarta Sans, sans-serif';
     ctx.textAlign = 'center';
@@ -974,7 +1046,6 @@
     ctx.fillText('Pemasukan', w * 0.3, h - 14);
     ctx.fillText('Pengeluaran', w * 0.7, h - 14);
 
-    // Values on top of bars
     ctx.fillStyle = '#34d399';
     ctx.font = '700 12px Plus Jakarta Sans, sans-serif';
     ctx.fillText(formatRupiah(stats.income), w * 0.3, Math.max(16, h - paddingBottom - incomeBarH - 8));
@@ -1008,11 +1079,10 @@
 
     const sourceWallet = appState.wallets.find(w => w.id === txData.walletId);
     if (!sourceWallet) {
-      showToast('Pilih dompet yang valid!', 'error');
+      showToast('Pilih rekening sumber yang valid!', 'error');
       return false;
     }
 
-    // Process depending on type
     if (txData.type === 'expense') {
       sourceWallet.balance -= amount;
     } else if (txData.type === 'income') {
@@ -1020,29 +1090,38 @@
     } else if (txData.type === 'transfer') {
       const targetWallet = appState.wallets.find(w => w.id === txData.targetWalletId);
       if (!targetWallet) {
-        showToast('Pilih dompet tujuan transfer!', 'error');
+        showToast('Pilih rekening tujuan transfer!', 'error');
         return false;
       }
       if (sourceWallet.id === targetWallet.id) {
-        showToast('Dompet asal dan tujuan tidak boleh sama!', 'error');
+        showToast('Rekening asal dan tujuan tidak boleh sama!', 'error');
         return false;
       }
       const fee = Number(txData.fee) || 0;
       sourceWallet.balance -= (amount + fee);
       targetWallet.balance += amount;
     } else if (txData.type === 'debt') {
-      // Talangan: uang keluar dari dompet kita untuk bayarin teman
-      sourceWallet.balance -= amount;
-
-      // Buat entitas Talangan (Debt)
+      const debtType = txData.debtType || 'receivable';
       const debtId = generateId('debt');
+
+      if (debtType === 'receivable') {
+        // Piutang: Uang kita keluar dipinjamkan ke pihak lain
+        sourceWallet.balance -= amount;
+        txData.type = 'receivable_lend';
+      } else {
+        // Utang: Uang pinjaman masuk ke dompet kita
+        sourceWallet.balance += amount;
+        txData.type = 'payable_borrow';
+      }
+
       appState.debts.unshift({
         id: debtId,
-        personName: txData.personName || 'Teman',
+        debtType, // 'receivable' or 'payable'
+        personName: txData.personName || 'Pihak Terkait',
         originalAmount: amount,
         remainingAmount: amount,
         walletId: sourceWallet.id,
-        note: txData.note || 'Talangan sementara',
+        note: txData.note || (debtType === 'receivable' ? 'Piutang' : 'Pinjaman Utang'),
         date: txData.date,
         dueDate: txData.dueDate || '',
         status: 'unpaid',
@@ -1050,7 +1129,6 @@
       });
 
       txData.debtId = debtId;
-      txData.type = 'debt_lend';
     }
 
     const newTx = {
@@ -1071,7 +1149,7 @@
     appState.transactions.unshift(newTx);
     saveState();
     refreshAllViews();
-    showToast('Transaksi berhasil disimpan! ✓', 'success');
+    showToast('Mutasi transaksi berhasil disimpan ✓', 'success');
     return true;
   }
 
@@ -1083,11 +1161,10 @@
     const amount = Number(tx.amount) || 0;
     const sourceWallet = appState.wallets.find(w => w.id === tx.walletId);
 
-    // Revert wallet balance
     if (sourceWallet) {
-      if (tx.type === 'expense' || tx.type === 'debt_lend') {
+      if (tx.type === 'expense' || tx.type === 'receivable_lend' || tx.type === 'payable_repay') {
         sourceWallet.balance += amount;
-      } else if (tx.type === 'income' || tx.type === 'debt_repay') {
+      } else if (tx.type === 'income' || tx.type === 'payable_borrow' || tx.type === 'receivable_repay') {
         sourceWallet.balance -= amount;
       } else if (tx.type === 'transfer') {
         sourceWallet.balance += (amount + (Number(tx.fee) || 0));
@@ -1099,7 +1176,7 @@
     appState.transactions.splice(idx, 1);
     saveState();
     refreshAllViews();
-    showToast('Transaksi dihapus', 'info');
+    showToast('Catatan mutasi berhasil dihapus', 'info');
   }
 
   function repayDebt(debtId, amount, targetWalletId, note, date) {
@@ -1108,20 +1185,26 @@
 
     const targetWallet = appState.wallets.find(w => w.id === targetWalletId);
     if (!targetWallet) {
-      showToast('Pilih dompet tujuan pelunasan!', 'error');
+      showToast('Pilih rekening transaksi!', 'error');
       return false;
     }
 
     const repayAmt = Number(amount) || 0;
     if (repayAmt <= 0) {
-      showToast('Nominal pelunasan tidak valid!', 'error');
+      showToast('Nominal pembayaran tidak valid!', 'error');
       return false;
     }
 
-    // Saldo dompet penerima otomatis bertambah!
-    targetWallet.balance += repayAmt;
+    const isReceivable = (debt.debtType || 'receivable') === 'receivable';
 
-    // Catat repayment di debt
+    if (isReceivable) {
+      // Pelunasan Piutang: Pihak lain membayar -> uang MASUK ke dompet kita
+      targetWallet.balance += repayAmt;
+    } else {
+      // Pembayaran Utang: Kita membayar utang -> uang KELUAR dari dompet kita
+      targetWallet.balance -= repayAmt;
+    }
+
     debt.remainingAmount = Math.max(0, debt.remainingAmount - repayAmt);
     debt.status = debt.remainingAmount === 0 ? 'paid' : 'partial';
     debt.repayments.push({
@@ -1131,23 +1214,23 @@
       note: note || ''
     });
 
-    // Catat juga ke riwayat transaksi sebagai debt_repay
+    const txType = isReceivable ? 'receivable_repay' : 'payable_repay';
     const txId = generateId('tx');
     appState.transactions.unshift({
       id: txId,
-      type: 'debt_repay',
+      type: txType,
       amount: repayAmt,
       walletId: targetWalletId,
       personName: debt.personName,
       debtId: debt.id,
-      note: `Pelunasan talangan ${debt.personName}${note ? ': ' + note : ''}`,
+      note: (isReceivable ? 'Pelunasan piutang: ' : 'Pembayaran utang kepada: ') + debt.personName + (note ? ' - ' + note : ''),
       date: date || getCurrentDateFormatted(),
       time: getCurrentTimeFormatted()
     });
 
     saveState();
     refreshAllViews();
-    showToast(`Pelunasan berhasil! Saldo ${targetWallet.name} bertambah ${formatRupiah(repayAmt)} ✓`, 'success');
+    showToast(`Transaksi pembayaran berhasil dikonfirmasi ✓`, 'success');
     return true;
   }
 
@@ -1157,29 +1240,95 @@
     appState.debts.splice(idx, 1);
     saveState();
     refreshAllViews();
-    showToast('Catatan talangan dihapus', 'info');
+    showToast('Catatan berhasil dihapus', 'info');
   }
 
+  // Category CRUD
+  function saveCategory(catData) {
+    const name = catData.name.trim();
+    if (!name) {
+      showToast('Nama kategori harus diisi!', 'error');
+      return false;
+    }
+
+    const budget = Number(catData.budget) || 0;
+
+    if (catData.id) {
+      const cat = appState.categories.find(c => c.id === catData.id);
+      if (!cat) return false;
+      cat.name = name;
+      cat.type = catData.type;
+      cat.icon = catData.icon || '🏷️';
+      cat.budget = budget;
+
+      // Update current period budget allocation
+      const pBudget = getPeriodBudget(currentPeriod);
+      if (!pBudget.categories) pBudget.categories = {};
+      pBudget.categories[cat.id] = budget;
+
+      showToast(`Kategori "${name}" berhasil diperbarui ✓`, 'success');
+    } else {
+      const newId = generateId('cat');
+      const newCat = {
+        id: newId,
+        name,
+        type: catData.type,
+        icon: catData.icon || '🏷️',
+        color: catData.color || '#3b82f6',
+        budget
+      };
+      appState.categories.push(newCat);
+
+      const pBudget = getPeriodBudget(currentPeriod);
+      if (!pBudget.categories) pBudget.categories = {};
+      pBudget.categories[newId] = budget;
+
+      showToast(`Kategori "${name}" berhasil ditambahkan ✓`, 'success');
+    }
+
+    saveState();
+    refreshAllViews();
+    return true;
+  }
+
+  function deleteCategory(catId) {
+    const idx = appState.categories.findIndex(c => c.id === catId);
+    if (idx === -1) return;
+
+    const name = appState.categories[idx].name;
+    appState.categories.splice(idx, 1);
+
+    // Remove from period budget allocations
+    Object.values(appState.budgetsByPeriod || {}).forEach(b => {
+      if (b.categories && b.categories[catId]) {
+        delete b.categories[catId];
+      }
+    });
+
+    saveState();
+    refreshAllViews();
+    showToast(`Kategori "${name}" telah dihapus`, 'info');
+  }
+
+  // Wallet CRUD
   function saveWallet(walletData) {
     const name = walletData.name.trim();
     if (!name) {
-      showToast('Nama dompet harus diisi!', 'error');
+      showToast('Nama rekening/akun harus diisi!', 'error');
       return false;
     }
 
     const balance = Number(walletData.balance) || 0;
 
     if (walletData.id) {
-      // Edit existing
       const w = appState.wallets.find(x => x.id === walletData.id);
       if (!w) return false;
       w.name = name;
       w.type = walletData.type;
       w.balance = balance;
       w.color = walletData.color;
-      showToast(`Dompet "${name}" diperbarui ✓`, 'success');
+      showToast(`Akun "${name}" diperbarui ✓`, 'success');
     } else {
-      // Add new
       const newWallet = {
         id: generateId('w'),
         name,
@@ -1189,7 +1338,7 @@
         color: walletData.color || '#10b981'
       };
       appState.wallets.push(newWallet);
-      showToast(`Dompet "${name}" berhasil ditambahkan! ✓`, 'success');
+      showToast(`Akun "${name}" berhasil ditambahkan ✓`, 'success');
     }
 
     saveState();
@@ -1199,7 +1348,7 @@
 
   function deleteWallet(id) {
     if (appState.wallets.length <= 1) {
-      showToast('Anda harus memiliki minimal 1 dompet aktif!', 'error');
+      showToast('Anda harus memiliki minimal 1 akun aktif!', 'error');
       return;
     }
     const idx = appState.wallets.findIndex(w => w.id === id);
@@ -1209,19 +1358,37 @@
     appState.wallets.splice(idx, 1);
     saveState();
     refreshAllViews();
-    showToast(`Dompet "${wName}" telah dihapus`, 'info');
+    showToast(`Akun "${wName}" telah dihapus`, 'info');
   }
 
-  // --- EXPORT TO EXCEL / CSV ENGINE ---
+  // Copy budget from previous month
+  function copyBudgetFromPreviousPeriod() {
+    const prevPeriod = getShiftedPeriod(currentPeriod, -1);
+    const prevBudget = appState.budgetsByPeriod && appState.budgetsByPeriod[prevPeriod];
+
+    if (!prevBudget || (!prevBudget.global && Object.keys(prevBudget.categories || {}).length === 0)) {
+      showToast(`Belum ada data anggaran pada bulan ${formatPeriodDisplay(prevPeriod)} untuk disalin!`, 'info');
+      return;
+    }
+
+    const curBudget = getPeriodBudget(currentPeriod);
+    curBudget.global = prevBudget.global || 0;
+    curBudget.categories = JSON.parse(JSON.stringify(prevBudget.categories || {}));
+
+    saveState();
+    refreshAllViews();
+    showToast(`Anggaran berhasil disalin dari bulan ${formatPeriodDisplay(prevPeriod)} ✓`, 'success');
+  }
+
+  // --- EXPORT & BACKUP ENGINE ---
   function exportToExcelCSV() {
     if (appState.transactions.length === 0) {
       showToast('Belum ada transaksi untuk diekspor!', 'error');
       return;
     }
 
-    // CSV header with UTF-8 BOM so Excel opens it automatically with correct formatting
     let csvContent = '\uFEFF';
-    csvContent += 'ID Transaksi;Tanggal;Waktu;Tipe;Kategori;Dompet Asal;Dompet Tujuan / Peminjam;Keterangan;Nominal (Rp);Biaya Admin (Rp)\r\n';
+    csvContent += 'ID Transaksi;Tanggal;Waktu;Tipe Mutasi;Kategori;Rekening Sumber;Rekening Tujuan / Pihak Terkait;Keterangan;Nominal (Rp);Biaya Admin (Rp)\r\n';
 
     appState.transactions.forEach(tx => {
       const wallet = appState.wallets.find(w => w.id === tx.walletId);
@@ -1231,9 +1398,11 @@
       let typeLabel = tx.type;
       if (tx.type === 'expense') typeLabel = 'Pengeluaran';
       else if (tx.type === 'income') typeLabel = 'Pemasukan';
-      else if (tx.type === 'transfer') typeLabel = 'Transfer Antar Dompet';
-      else if (tx.type === 'debt_lend') typeLabel = 'Talangan Diberikan';
-      else if (tx.type === 'debt_repay') typeLabel = 'Pelunasan Talangan';
+      else if (tx.type === 'transfer') typeLabel = 'Transfer Antar Rekening';
+      else if (tx.type === 'receivable_lend') typeLabel = 'Piutang Diberikan';
+      else if (tx.type === 'receivable_repay') typeLabel = 'Pelunasan Piutang';
+      else if (tx.type === 'payable_borrow') typeLabel = 'Utang Diterima';
+      else if (tx.type === 'payable_repay') typeLabel = 'Pembayaran Utang';
 
       const catName = category ? category.name : '-';
       const sourceName = wallet ? wallet.name : '-';
@@ -1247,16 +1416,15 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `FinFlow_Keuangan_${getCurrentDateFormatted()}.csv`);
+    link.setAttribute('download', `FinFlow_Mutasi_${getCurrentDateFormatted()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    showToast('File Excel / CSV berhasil diunduh! 📊', 'success');
+    showToast('Berkas Excel / CSV berhasil diunduh! 📊', 'success');
   }
 
-  // --- BACKUP & RESTORE JSON ENGINE ---
   function exportBackupJSON() {
     const dataStr = JSON.stringify(appState, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -1268,7 +1436,7 @@
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    showToast('Cadangan JSON berhasil didownload! 💾', 'success');
+    showToast('Cadangan JSON berhasil diunduh 💾', 'success');
   }
 
   function restoreBackupJSON(file) {
@@ -1276,23 +1444,23 @@
     reader.onload = function (e) {
       try {
         const parsed = JSON.parse(e.target.result);
-        if (parsed.wallets && parsed.transactions) {
+        if (parsed.wallets) {
           appState = parsed;
           saveState();
           refreshAllViews();
           closeModal('modal-backup');
-          showToast('Data berhasil dipulihkan secara utuh! ✓', 'success');
+          showToast('Data berhasil dipulihkan secara utuh ✓', 'success');
         } else {
-          showToast('Format file backup tidak sesuai!', 'error');
+          showToast('Format berkas cadangan tidak valid!', 'error');
         }
       } catch (err) {
-        showToast('Gagal membaca file backup JSON!', 'error');
+        showToast('Gagal memproses berkas cadangan JSON!', 'error');
       }
     };
     reader.readAsText(file);
   }
 
-  // --- MODAL CONTROLLERS & FORMS ---
+  // --- MODAL CONTROLLERS ---
 
   function openModal(id) {
     const modal = document.getElementById(id);
@@ -1311,12 +1479,11 @@
   }
 
   let currentSelectedTxType = 'expense';
-  let currentSelectedCategoryId = 'cat_food';
+  let currentSelectedCategoryId = '';
 
   function openTransactionModal(type = 'expense') {
     currentSelectedTxType = type;
 
-    // Reset segmented buttons
     document.querySelectorAll('#form-transaction .segmented-btn').forEach(btn => {
       btn.classList.remove('active');
       if (btn.dataset.txType === type) btn.classList.add('active');
@@ -1329,7 +1496,6 @@
     document.getElementById('tx-date-input').value = getCurrentDateFormatted();
     document.getElementById('debt-person-input').value = '';
 
-    // Populate Wallets select
     const walletSelect = document.getElementById('tx-source-wallet');
     const targetWalletSelect = document.getElementById('tx-target-wallet');
     walletSelect.innerHTML = appState.wallets.map(w => `<option value="${w.id}">${escapeHtml(w.name)} (${formatRupiah(w.balance)})</option>`).join('');
@@ -1350,17 +1516,18 @@
       debtSec.style.display = 'block';
       transferSec.style.display = 'none';
       catSec.style.display = 'none';
-      walletLabel.textContent = 'Uang Keluar dari Dompet Mana?';
+      const debtType = document.getElementById('debt-type-select').value;
+      walletLabel.textContent = debtType === 'receivable' ? 'Uang Keluar dari Rekening Mana?' : 'Uang Masuk ke Rekening Mana?';
     } else if (type === 'transfer') {
       debtSec.style.display = 'none';
       transferSec.style.display = 'block';
       catSec.style.display = 'none';
-      walletLabel.textContent = 'Dari Dompet Asal:';
+      walletLabel.textContent = 'Rekening Sumber:';
     } else {
       debtSec.style.display = 'none';
       transferSec.style.display = 'none';
       catSec.style.display = 'block';
-      walletLabel.textContent = type === 'expense' ? 'Pakai Dompet Mana?' : 'Masuk ke Dompet Mana?';
+      walletLabel.textContent = type === 'expense' ? 'Sumber Rekening / Kas' : 'Tujuan Rekening / Kas';
       renderCategoryPicker(type);
     }
   }
@@ -1369,31 +1536,82 @@
     const grid = document.getElementById('category-picker-grid');
     if (!grid) return;
 
-    const categories = appState.categories.filter(c => c.type === (type === 'income' ? 'income' : 'expense'));
+    const targetType = type === 'income' ? 'income' : 'expense';
+    const categories = appState.categories.filter(c => c.type === targetType);
+
     if (categories.length > 0 && !categories.some(c => c.id === currentSelectedCategoryId)) {
       currentSelectedCategoryId = categories[0].id;
     }
 
     grid.innerHTML = categories.map(cat => `
       <div class="category-pick-item ${cat.id === currentSelectedCategoryId ? 'active' : ''}" data-cat-id="${cat.id}">
-        <div class="category-pick-icon" style="background: ${cat.color || 'var(--color-primary)'}22; color: ${cat.color || '#fff'};">
-          ${cat.icon}
+        <div class="category-pick-icon" style="background: rgba(255,255,255,0.06); font-size: 1.2rem;">
+          ${cat.icon || '🏷️'}
         </div>
         <div class="category-pick-label">${escapeHtml(cat.name)}</div>
       </div>
     `).join('');
+
+    updateCategoryRemainingHint();
 
     grid.querySelectorAll('.category-pick-item').forEach(item => {
       item.addEventListener('click', () => {
         grid.querySelectorAll('.category-pick-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
         currentSelectedCategoryId = item.dataset.catId;
+        updateCategoryRemainingHint();
       });
     });
   }
 
+  function updateCategoryRemainingHint() {
+    const hint = document.getElementById('tx-budget-remaining-hint');
+    if (!hint || !currentSelectedCategoryId) return;
+
+    const bConfig = getPeriodBudget(currentPeriod);
+    const cat = appState.categories.find(c => c.id === currentSelectedCategoryId);
+    const catLimit = (bConfig.categories && bConfig.categories[currentSelectedCategoryId]) || 0;
+
+    if (catLimit > 0) {
+      const stats = getPeriodStats(currentPeriod);
+      const spent = stats.categoryTotals[currentSelectedCategoryId] || 0;
+      const rem = Math.max(0, catLimit - spent);
+      hint.textContent = `Sisa Anggaran ${cat ? cat.name : ''}: ${formatRupiah(rem)}`;
+    } else {
+      hint.textContent = '';
+    }
+  }
+
+  function openAddCategoryModal() {
+    document.getElementById('category-modal-title').textContent = 'Tambah Pos Kategori Baru';
+    document.getElementById('category-edit-id').value = '';
+    document.getElementById('cat-name-input').value = '';
+    document.getElementById('cat-type-select').value = 'expense';
+    document.getElementById('cat-icon-input').value = '🏷️';
+    document.getElementById('cat-budget-input').value = '';
+    openModal('modal-category');
+  }
+
+  function openEditCategoryModal(catId) {
+    const cat = appState.categories.find(c => c.id === catId);
+    if (!cat) return;
+
+    const bConfig = getPeriodBudget(currentPeriod);
+    const allocated = (bConfig.categories && bConfig.categories[cat.id]) !== undefined
+      ? bConfig.categories[cat.id]
+      : (cat.budget || 0);
+
+    document.getElementById('category-modal-title').textContent = 'Edit Pos Kategori';
+    document.getElementById('category-edit-id').value = cat.id;
+    document.getElementById('cat-name-input').value = cat.name;
+    document.getElementById('cat-type-select').value = cat.type;
+    document.getElementById('cat-icon-input').value = cat.icon || '🏷️';
+    document.getElementById('cat-budget-input').value = allocated || '';
+    openModal('modal-category');
+  }
+
   function openAddWalletModal() {
-    document.getElementById('wallet-modal-title').textContent = 'Tambah Dompet Baru';
+    document.getElementById('wallet-modal-title').textContent = 'Tambah Rekening Baru';
     document.getElementById('wallet-edit-id').value = '';
     document.getElementById('wallet-name-input').value = '';
     document.getElementById('wallet-type-select').value = 'bank';
@@ -1406,7 +1624,7 @@
     const wallet = appState.wallets.find(w => w.id === walletId);
     if (!wallet) return;
 
-    document.getElementById('wallet-modal-title').textContent = 'Edit Dompet';
+    document.getElementById('wallet-modal-title').textContent = 'Ubah Informasi Rekening';
     document.getElementById('wallet-edit-id').value = wallet.id;
     document.getElementById('wallet-name-input').value = wallet.name;
     document.getElementById('wallet-type-select').value = wallet.type;
@@ -1419,6 +1637,10 @@
     const debt = appState.debts.find(d => d.id === debtId);
     if (!debt) return;
 
+    const isReceivable = (debt.debtType || 'receivable') === 'receivable';
+
+    document.getElementById('repay-modal-title').textContent = isReceivable ? 'Penerimaan Pelunasan Piutang' : 'Pembayaran Pelunasan Utang';
+    document.getElementById('repay-party-label').textContent = isReceivable ? 'Debitur (Pihak yang Melunasi):' : 'Kreditur (Pemberi Pinjaman):';
     document.getElementById('repay-debt-id').value = debt.id;
     document.getElementById('repay-person-name').textContent = debt.personName;
     document.getElementById('repay-amount-due').textContent = formatRupiah(debt.remainingAmount);
@@ -1426,36 +1648,25 @@
     document.getElementById('repay-date-input').value = getCurrentDateFormatted();
     document.getElementById('repay-note-input').value = '';
 
-    // Populate target wallet options
+    document.getElementById('repay-wallet-label').textContent = isReceivable ? 'Dana Masuk ke Rekening Mana?' : 'Dibayar dari Rekening Mana?';
+    document.getElementById('repay-wallet-hint').textContent = isReceivable
+      ? '✓ Saldo rekening terpilih akan otomatis bertambah.'
+      : '✓ Saldo rekening terpilih akan otomatis berkurang.';
+
     const targetSelect = document.getElementById('repay-target-wallet');
     targetSelect.innerHTML = appState.wallets.map(w => `<option value="${w.id}">${escapeHtml(w.name)} (${formatRupiah(w.balance)})</option>`).join('');
 
     openModal('modal-repay-debt');
   }
 
-  function openBudgetSettingsModal() {
-    document.getElementById('budget-global-input').value = appState.budgets.monthlyGlobal || 0;
-
-    const container = document.getElementById('budget-category-inputs-list');
-    const expenseCats = appState.categories.filter(c => c.type === 'expense');
-
-    container.innerHTML = expenseCats.map(cat => {
-      const val = (appState.budgets.categoryBudgets && appState.budgets.categoryBudgets[cat.id]) || '';
-      return `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-          <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; min-width: 140px;">
-            <span>${cat.icon}</span>
-            <span>${escapeHtml(cat.name)}</span>
-          </div>
-          <input type="text" class="form-input amount-display cat-budget-input" data-cat-id="${cat.id}" placeholder="0" inputmode="numeric" value="${val}" style="max-width: 150px; padding: 8px 10px; font-size: 0.85rem;" />
-        </div>
-      `;
-    }).join('');
-
+  function openGlobalBudgetModal() {
+    const bConfig = getPeriodBudget(currentPeriod);
+    document.getElementById('budget-modal-period-title').textContent = formatPeriodDisplay(currentPeriod);
+    document.getElementById('budget-global-input').value = bConfig.global || '';
     openModal('modal-budget');
   }
 
-  // --- REFRESH VIEWS ---
+  // --- REFRESH ALL VIEWS ---
   function refreshAllViews() {
     renderDashboard();
     renderTransactionsTab();
@@ -1464,11 +1675,10 @@
     renderDebtTab();
     renderReportsTab();
 
-    // Update wallet dropdown in transactions filter
     const walletFilterSelect = document.getElementById('tx-wallet-filter');
     if (walletFilterSelect) {
       const cur = walletFilterSelect.value;
-      walletFilterSelect.innerHTML = '<option value="all">Semua Dompet</option>' +
+      walletFilterSelect.innerHTML = '<option value="all">Semua Rekening/Dompet</option>' +
         appState.wallets.map(w => `<option value="${w.id}">${escapeHtml(w.name)}</option>`).join('');
       walletFilterSelect.value = cur || 'all';
     }
@@ -1486,7 +1696,6 @@
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Refresh specific tab
     if (tabId === 'tab-dashboard') renderDashboard();
     else if (tabId === 'tab-transactions') renderTransactionsTab();
     else if (tabId === 'tab-budget') renderBudgetTab();
@@ -1506,9 +1715,9 @@
     }[tag] || tag));
   }
 
-  // --- EVENT LISTENERS INITIALIZATION ---
+  // --- EVENT LISTENERS ---
   function initEventListeners() {
-    // Bottom Nav Tabs
+    // Bottom Nav
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         const tabId = btn.dataset.tab;
@@ -1516,12 +1725,12 @@
       });
     });
 
-    // Floating Add Button (+)
+    // Floating Action Button (+)
     document.getElementById('fab-add-transaction').addEventListener('click', () => {
       openTransactionModal('expense');
     });
 
-    // Quick Action Shortcuts on Dashboard
+    // Quick Actions
     document.getElementById('qa-btn-expense').addEventListener('click', () => openTransactionModal('expense'));
     document.getElementById('qa-btn-income').addEventListener('click', () => openTransactionModal('income'));
     document.getElementById('qa-btn-transfer').addEventListener('click', () => openTransactionModal('transfer'));
@@ -1532,7 +1741,7 @@
     document.getElementById('link-all-transactions').addEventListener('click', () => switchTab('tab-transactions'));
     document.getElementById('btn-goto-debt').addEventListener('click', () => switchTab('tab-debt'));
 
-    // Eye toggle for Net Worth
+    // Eye toggle
     document.getElementById('btn-toggle-eye').addEventListener('click', () => {
       appState.settings.hideBalance = !appState.settings.hideBalance;
       saveState();
@@ -1540,7 +1749,22 @@
       renderWalletsTab();
     });
 
-    // Segmented control in Transaction Modal
+    // Period Navigation (Dashboard & Budget Tabs)
+    const handlePrevMonth = () => {
+      currentPeriod = getShiftedPeriod(currentPeriod, -1);
+      refreshAllViews();
+    };
+    const handleNextMonth = () => {
+      currentPeriod = getShiftedPeriod(currentPeriod, 1);
+      refreshAllViews();
+    };
+
+    document.getElementById('dash-prev-month').addEventListener('click', handlePrevMonth);
+    document.getElementById('dash-next-month').addEventListener('click', handleNextMonth);
+    document.getElementById('budget-prev-month').addEventListener('click', handlePrevMonth);
+    document.getElementById('budget-next-month').addEventListener('click', handleNextMonth);
+
+    // Segmented Type Buttons in Transaction Modal
     document.querySelectorAll('#form-transaction .segmented-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('#form-transaction .segmented-btn').forEach(b => b.classList.remove('active'));
@@ -1551,13 +1775,28 @@
       });
     });
 
-    // Quick Nominal Presets in Transaction Modal
+    // Debt Type change listener
+    document.getElementById('debt-type-select').addEventListener('change', () => {
+      const dType = document.getElementById('debt-type-select').value;
+      const label = document.getElementById('debt-person-label');
+      const wLabel = document.getElementById('tx-wallet-label');
+      if (dType === 'receivable') {
+        label.textContent = 'Nama Debitur (Pihak yang Meminjam) *';
+        wLabel.textContent = 'Uang Keluar dari Rekening Mana?';
+      } else {
+        label.textContent = 'Nama Kreditur (Pemberi Pinjaman) *';
+        wLabel.textContent = 'Uang Masuk ke Rekening Mana?';
+      }
+    });
+
+    // Quick Nominal Presets
     document.querySelectorAll('.preset-chip[data-add]').forEach(chip => {
       chip.addEventListener('click', () => {
         const addVal = parseInt(chip.dataset.add, 10);
         const amountInput = document.getElementById('tx-amount-input');
         const currentVal = parseInt(amountInput.value.replace(/\D/g, ''), 10) || 0;
         amountInput.value = (currentVal + addVal);
+        updateCategoryRemainingHint();
       });
     });
 
@@ -1577,14 +1816,16 @@
       const personName = document.getElementById('debt-person-input').value.trim();
       const dueDate = document.getElementById('debt-due-date-input').value;
       const adminFee = parseInt((document.getElementById('tx-admin-fee').value || '0').replace(/\D/g, ''), 10) || 0;
+      const debtType = document.getElementById('debt-type-select').value;
 
       if (currentSelectedTxType === 'debt' && !personName) {
-        showToast('Masukkan nama orang/teman yang ditalangi!', 'error');
+        showToast('Nama pihak terkait harus diisi!', 'error');
         return;
       }
 
       const success = addTransaction({
         type: currentSelectedTxType,
+        debtType,
         amount,
         walletId,
         targetWalletId,
@@ -1613,11 +1854,59 @@
       });
     });
 
-    // Wallet Trigger Buttons
-    document.getElementById('btn-add-wallet-trigger').addEventListener('click', () => openAddWalletModal());
+    // Category Management
+    document.getElementById('btn-add-category-trigger').addEventListener('click', openAddCategoryModal);
+
+    document.querySelectorAll('.emoji-pick').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('cat-icon-input').value = btn.dataset.emoji;
+      });
+    });
+
+    document.getElementById('form-category').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('category-edit-id').value;
+      const name = document.getElementById('cat-name-input').value;
+      const type = document.getElementById('cat-type-select').value;
+      const icon = document.getElementById('cat-icon-input').value;
+      const rawBudget = document.getElementById('cat-budget-input').value.replace(/\D/g, '');
+      const budget = parseInt(rawBudget, 10) || 0;
+
+      const success = saveCategory({
+        id: id || null,
+        name,
+        type,
+        icon,
+        budget
+      });
+
+      if (success) {
+        closeModal('modal-category');
+      }
+    });
+
+    // Budget Total Modal & Copy
+    document.getElementById('btn-edit-global-budget').addEventListener('click', openGlobalBudgetModal);
+    document.getElementById('btn-copy-prev-budget').addEventListener('click', copyBudgetFromPreviousPeriod);
+
+    document.getElementById('form-budget-settings').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rawGlobal = document.getElementById('budget-global-input').value.replace(/\D/g, '');
+      const globalAmt = parseInt(rawGlobal, 10) || 0;
+
+      const bConfig = getPeriodBudget(currentPeriod);
+      bConfig.global = globalAmt;
+
+      saveState();
+      refreshAllViews();
+      closeModal('modal-budget');
+      showToast(`Plafon anggaran bulan ${formatPeriodDisplay(currentPeriod)} berhasil disimpan ✓`, 'success');
+    });
+
+    // Wallets Trigger
+    document.getElementById('btn-add-wallet-trigger').addEventListener('click', openAddWalletModal);
     document.getElementById('btn-quick-transfer').addEventListener('click', () => openTransactionModal('transfer'));
 
-    // Wallet Color Picker
     let selectedWalletColor = '#10b981';
     document.querySelectorAll('.color-picker-dot').forEach(dot => {
       dot.addEventListener('click', () => {
@@ -1627,7 +1916,6 @@
       });
     });
 
-    // Wallet Form Submit
     document.getElementById('form-wallet').addEventListener('submit', (e) => {
       e.preventDefault();
       const id = document.getElementById('wallet-edit-id').value;
@@ -1649,25 +1937,38 @@
       }
     });
 
-    // Delete Wallet
     document.getElementById('btn-delete-wallet').addEventListener('click', () => {
       const id = document.getElementById('wallet-edit-id').value;
-      if (id && confirm('Yakin ingin menghapus dompet ini?')) {
+      if (id && confirm('Hapus rekening ini dari daftar?')) {
         deleteWallet(id);
         closeModal('modal-wallet');
       }
     });
 
-    // Debt Filters
+    // Utang & Piutang Dual Sub-tabs
+    document.getElementById('btn-tab-receivable').addEventListener('click', () => {
+      activeDebtSubtab = 'receivable';
+      document.getElementById('btn-tab-receivable').className = 'dual-tab-btn active tab-receivable';
+      document.getElementById('btn-tab-payable').className = 'dual-tab-btn tab-payable';
+      renderDebtTab();
+    });
+
+    document.getElementById('btn-tab-payable').addEventListener('click', () => {
+      activeDebtSubtab = 'payable';
+      document.getElementById('btn-tab-payable').className = 'dual-tab-btn active tab-payable';
+      document.getElementById('btn-tab-receivable').className = 'dual-tab-btn tab-receivable';
+      renderDebtTab();
+    });
+
     document.getElementById('debt-filter-unpaid').addEventListener('click', () => {
-      currentDebtFilter = 'unpaid';
+      activeDebtFilter = 'unpaid';
       document.getElementById('debt-filter-unpaid').classList.add('active');
       document.getElementById('debt-filter-paid').classList.remove('active');
       renderDebtTab();
     });
 
     document.getElementById('debt-filter-paid').addEventListener('click', () => {
-      currentDebtFilter = 'paid';
+      activeDebtFilter = 'paid';
       document.getElementById('debt-filter-paid').classList.add('active');
       document.getElementById('debt-filter-unpaid').classList.remove('active');
       renderDebtTab();
@@ -1677,7 +1978,6 @@
       openTransactionModal('debt');
     });
 
-    // Repay Debt Form Submit
     document.getElementById('form-repay-debt').addEventListener('submit', (e) => {
       e.preventDefault();
       const debtId = document.getElementById('repay-debt-id').value;
@@ -1693,44 +1993,13 @@
       }
     });
 
-    // Budget Edit Trigger
-    document.getElementById('btn-edit-global-budget').addEventListener('click', () => {
-      openBudgetSettingsModal();
-    });
-
-    // Budget Form Submit
-    document.getElementById('form-budget-settings').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const rawGlobal = document.getElementById('budget-global-input').value.replace(/\D/g, '');
-      appState.budgets.monthlyGlobal = parseInt(rawGlobal, 10) || 0;
-
-      if (!appState.budgets.categoryBudgets) appState.budgets.categoryBudgets = {};
-      document.querySelectorAll('.cat-budget-input').forEach(input => {
-        const catId = input.dataset.catId;
-        const rawVal = input.value.replace(/\D/g, '');
-        appState.budgets.categoryBudgets[catId] = parseInt(rawVal, 10) || 0;
-      });
-
-      saveState();
-      refreshAllViews();
-      closeModal('modal-budget');
-      showToast('Batas anggaran bulanan berhasil diperbarui! ✓', 'success');
-    });
-
     // Top Header Buttons
-    document.getElementById('btn-open-backup').addEventListener('click', () => {
-      openModal('modal-backup');
-    });
+    document.getElementById('btn-open-backup').addEventListener('click', () => openModal('modal-backup'));
+    document.getElementById('btn-open-reports-tab').addEventListener('click', () => switchTab('tab-reports'));
 
-    document.getElementById('btn-open-reports-tab').addEventListener('click', () => {
-      switchTab('tab-reports');
-    });
-
-    // Excel Export Buttons
+    // Excel & Backup Actions
     document.getElementById('btn-download-csv').addEventListener('click', exportToExcelCSV);
     document.getElementById('btn-export-excel-tx').addEventListener('click', exportToExcelCSV);
-
-    // Backup & Restore
     document.getElementById('btn-export-json').addEventListener('click', exportBackupJSON);
     document.getElementById('input-restore-json').addEventListener('change', (e) => {
       if (e.target.files && e.target.files[0]) {
@@ -1738,24 +2007,14 @@
       }
     });
 
-    // Sample data load & reset
-    document.getElementById('btn-load-sample').addEventListener('click', () => {
-      if (confirm('Muat data contoh? Data yang ada sekarang akan ditimpa dengan data simulasi yang lengkap.')) {
-        appState = JSON.parse(JSON.stringify(INITIAL_SAMPLE_STATE));
-        saveState();
-        refreshAllViews();
-        closeModal('modal-backup');
-        showToast('Data simulasi berhasil dimuat! 🎉', 'success');
-      }
-    });
-
+    // Clean Wipe / Reset All
     document.getElementById('btn-reset-all').addEventListener('click', () => {
-      if (confirm('PERINGATAN: Semua data catatan keuangan, dompet, dan talangan akan dihapus permanen! Lanjutkan?')) {
+      if (confirm('PERINGATAN RESMI: Seluruh riwayat mutasi, alokasi anggaran, dan akun akan dihapus bersih. Aplikasi akan kembali ke kondisi kosong awal. Lanjutkan?')) {
         localStorage.removeItem(STORAGE_KEY);
         loadState();
         refreshAllViews();
         closeModal('modal-backup');
-        showToast('Semua data berhasil direset bersih', 'info');
+        showToast('Seluruh data berhasil dibersihkan', 'info');
       }
     });
 
@@ -1764,23 +2023,18 @@
       renderReportsTab();
     });
 
-    // Modal close buttons (data-close)
+    // Modal close handlers
     document.querySelectorAll('[data-close]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        closeModal(btn.dataset.close);
-      });
+      btn.addEventListener('click', () => closeModal(btn.dataset.close));
     });
 
-    // Close modal on background overlay click
     document.querySelectorAll('.modal-overlay').forEach(modal => {
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          closeModal(modal.id);
-        }
+        if (e.target === modal) closeModal(modal.id);
       });
     });
 
-    // Offline / Online Detection
+    // Offline / Online detection
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
@@ -1788,23 +2042,25 @@
 
   function updateOnlineStatus() {
     const banner = document.getElementById('offline-banner');
-    if (!navigator.onLine) {
-      banner.classList.add('show');
-    } else {
-      banner.classList.remove('show');
+    if (banner) {
+      if (!navigator.onLine) {
+        banner.classList.add('show');
+      } else {
+        banner.classList.remove('show');
+      }
     }
   }
 
-  // --- SERVICE WORKER REGISTRATION (PWA) ---
+  // --- SERVICE WORKER (PWA) ---
   function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('./sw.js')
           .then(reg => {
-            console.log('FinFlow Service Worker registered successfully', reg.scope);
+            console.log('FinFlow Service Worker aktif:', reg.scope);
           })
           .catch(err => {
-            console.log('Service Worker registration skipped or failed:', err);
+            console.log('Service Worker registrasi lewati:', err);
           });
       });
     }
@@ -1818,7 +2074,6 @@
     registerServiceWorker();
   }
 
-  // Run when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
