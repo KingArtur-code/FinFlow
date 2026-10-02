@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="finGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded App Icon -->
+  <rect width="512" height="512" rx="128" fill="#090d16"/>
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+  
+  <!-- Glowing circle -->
+  <circle cx="256" cy="256" r="160" fill="url(#finGrad)" opacity="0.15" />
+
+  <!-- Wallet / Shield Symbol -->
+  <path d="M420 360V380C420 402.091 402.091 420 380 420H132C109.909 420 92 402.091 92 380V132C92 109.909 109.909 92 132 92H380C402.091 92 420 109.909 420 132V152H250C227.909 152 210 169.909 210 192V320C210 342.091 227.909 360 250 360H420Z" fill="url(#cardGrad)" stroke="url(#finGrad)" stroke-width="12" />
+  
+  <!-- Front Wallet Flap -->
+  <rect x="230" y="180" width="200" height="152" rx="28" fill="#141e33" stroke="url(#finGrad)" stroke-width="10"/>
+  
+  <!-- Gold coin / lock button -->
+  <circle cx="370" cy="256" r="26" fill="#10b981" stroke="#34d399" stroke-width="6"/>
+  <circle cx="370" cy="256" r="10" fill="#ffffff" />
+  
+  <!-- Upward Trend Arrow -->
+  <path d="M140 280 L200 220 L250 260 L320 180" fill="none" stroke="#34d399" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="290,180 320,180 320,210" fill="none" stroke="#34d399" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

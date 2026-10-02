@@ -1,0 +1,7 @@
+"ID Transaksi";"Tanggal";"Waktu";"Tipe Transaksi";"Kategori";"Dompet Asal";"Dompet Tujuan / Peminjam";"Keterangan";"Pemasukan (Rp)";"Pengeluaran (Rp)";"Status / Sisa Talangan"
+"TX-1001";"2026-10-01";"09:00";"Pemasukan";"Gaji & Honor";"BCA Utama";"-";"Gaji Bulanan";"7000000";"0";"Selesai"
+"TX-1002";"2026-10-01";"12:30";"Pengeluaran";"Makanan & Minuman";"Dompet Tunai";"-";"Nasi Padang Rendang + Es Teh";"0";"32000";"Selesai"
+"TX-1003";"2026-10-01";"08:15";"Pengeluaran";"Transportasi";"GoPay";"-";"Gojek ke Kantor";"0";"25000";"Selesai"
+"TX-1004";"2026-10-01";"19:40";"Pengeluaran";"Belanja";"BCA Utama";"-";"Belanja Bulanan Supermarket";"0";"350000";"Selesai"
+"TX-1005";"2026-10-02";"13:00";"Talangan (Uang Keluar)";"-";"BCA Utama";"Budi Santoso";"Talangan Makan Siang Mie Ayam";"0";"50000";"Belum Lunas (Rp 50.000)"
+"TX-1006";"2026-10-02";"16:00";"Pelunasan Talangan";"-";"BCA Utama";"Budi Santoso";"Budi ganti uang talangan via transfer";"50000";"0";"Lunas (Saldo BCA Kembali Bertambah)"
