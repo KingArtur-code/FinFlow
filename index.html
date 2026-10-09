@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5.0.0">
+  <link rel="stylesheet" href="styles.css?v=6.0.0">
 </head>
 <body>
   <div class="app-container" id="app">
@@ -21,31 +21,36 @@
       Mode Offline Aktif • Seluruh data tersimpan aman pada penyimpanan perangkat Anda
     </div>
 
-    <!-- App Header -->
+    <!-- App Header (Compact Mobile Bar with Integrated Period Switcher) -->
     <header class="app-header">
       <div class="header-brand">
-        <div class="brand-icon-wrapper">
-          <svg viewBox="0 0 512 512">
-            <path d="M 256 86 C 340 86 404 136 404 220 C 404 326 296 398 256 426 C 216 398 108 326 108 220 C 108 136 172 86 256 86 Z" fill="#14213d" stroke="rgba(255,255,255,0.2)" stroke-width="8"/>
-            <path d="M 175 160 L 335 160 C 355 160 365 174 365 190 C 365 206 355 220 335 220 L 230 220 L 230 250 L 305 250 C 322 250 332 262 332 276 C 332 290 322 302 305 302 L 230 302 L 230 358 C 230 376 216 388 198 388 C 180 388 166 376 166 358 L 166 182 C 166 170 171 160 175 160 Z" fill="#34d399"/>
-            <polygon points="340,118 368,146 340,174 312,146" fill="#fbbf24"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="brand-title">FinFlow</h1>
-          <p class="brand-subtitle">Manajemen Keuangan Profesional</p>
-        </div>
+        <div class="brand-monogram">FF</div>
+        <h1 class="brand-title">FinFlow</h1>
       </div>
-      <div class="header-actions">
-        <button id="btn-open-backup" class="icon-btn" title="Cadangan Data & Ekspor Excel" aria-label="Cadangan Data & Ekspor Excel">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+      <div class="header-right-tools">
+        <!-- Integrated Period Switcher Pill -->
+        <div class="header-period-pill">
+          <button class="period-arrow-btn" id="dash-prev-month" title="Bulan Sebelumnya" aria-label="Bulan Sebelumnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="header-period-label" id="dash-period-text">Oktober 2026</span>
+          <button class="period-arrow-btn" id="dash-next-month" title="Bulan Berikutnya" aria-label="Bulan Berikutnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <span id="dash-period-badge" style="display: none;">Periode Aktif</span>
+        </div>
+
+        <button id="btn-open-backup" class="icon-tool-btn" title="Cadangan Data & Ekspor Excel" aria-label="Cadangan Data & Ekspor Excel">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
         </button>
-        <button id="btn-open-reports-tab" class="icon-btn" title="Laporan & Analitik" aria-label="Laporan & Analitik">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <button id="btn-open-reports-tab" class="icon-tool-btn" title="Laporan & Analitik" aria-label="Laporan & Analitik">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -59,117 +64,80 @@
       
       <!-- ================= TAB 1: BERANDA (DASHBOARD) ================= -->
       <section id="tab-dashboard" class="tab-view active">
-        <!-- Month / Period Navigator -->
-        <div class="period-navigator">
-          <button class="period-nav-btn" id="dash-prev-month" title="Bulan Sebelumnya">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <div class="period-display">
-            <span class="period-title" id="dash-period-text">Oktober 2026</span>
-            <span class="badge badge-safe period-status-badge" id="dash-period-badge">Periode Aktif</span>
+
+        <!-- Total Net Balance Hero (Apple Wallet / Revolut Aesthetics) -->
+        <div class="hero-balance-section">
+          <div class="hero-balance-label-row">
+            <span class="hero-balance-caption">Total Saldo Bersih</span>
+            <button id="btn-toggle-eye" class="hero-eye-btn" title="Tampilkan / Sembunyikan Saldo">
+              <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
           </div>
-          <button class="period-nav-btn" id="dash-next-month" title="Bulan Berikutnya">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
 
-        <!-- Master Balance Card (Kekayaan Bersih) -->
-        <div class="double-bezel">
-          <div class="bezel-core master-balance-card">
-            <div class="balance-header">
-              <div class="balance-label">
-                <span class="eyebrow-tag">Kekayaan Bersih</span>
-                <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Total Saldo</span>
-                <button id="btn-toggle-eye" class="eye-toggle-btn" title="Tampilkan / Sembunyikan Saldo">
-                  <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </button>
-              </div>
+          <div class="hero-balance-headline">
+            <span class="currency">Rp </span><span id="master-net-worth" class="amount-display">0</span>
+          </div>
+
+          <!-- Clean Cashflow Micro-Pills -->
+          <div class="hero-cashflow-strip">
+            <div class="cashflow-pill income">
+              <span class="pill-dot green"></span>
+              <span class="pill-label">Pemasukan:</span>
+              <strong id="dash-month-income" class="amount-display">Rp 0</strong>
             </div>
-
-            <div class="balance-amount">
-              <span class="currency">Rp</span>
-              <span id="master-net-worth" class="amount-display">0</span>
-            </div>
-
-            <div class="balance-stats-grid">
-              <div class="balance-stat-item">
-                <div class="stat-icon-pill income">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <line x1="12" y1="19" x2="12" y2="5"></line>
-                    <polyline points="5 12 12 5 19 12"></polyline>
-                  </svg>
-                </div>
-                <div class="stat-details">
-                  <span class="stat-title">Pemasukan Periode Ini</span>
-                  <span class="stat-val amount-display" id="dash-month-income">Rp 0</span>
-                </div>
-              </div>
-
-              <div class="balance-stat-item">
-                <div class="stat-icon-pill expense">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                  </svg>
-                </div>
-                <div class="stat-details">
-                  <span class="stat-title">Pengeluaran Periode Ini</span>
-                  <span class="stat-val amount-display" id="dash-month-expense">Rp 0</span>
-                </div>
-              </div>
+            <div class="cashflow-pill expense">
+              <span class="pill-dot red"></span>
+              <span class="pill-label">Pengeluaran:</span>
+              <strong id="dash-month-expense" class="amount-display">Rp 0</strong>
             </div>
           </div>
         </div>
 
-        <!-- Quick Actions Shortcuts (Professional Fintech) -->
-        <div class="quick-actions-bar">
-          <button class="quick-action-btn" id="qa-btn-expense">
-            <div class="quick-action-icon expense">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <!-- 4 Circular Quick Action Buttons (Cash App / Revolut Architecture) -->
+        <div class="quick-actions-row">
+          <button class="circular-action-btn" id="qa-btn-expense">
+            <div class="action-circle-icon expense">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
             </div>
-            <span class="quick-action-label">Pengeluaran</span>
+            <span class="action-btn-title">Pengeluaran</span>
           </button>
 
-          <button class="quick-action-btn" id="qa-btn-income">
-            <div class="quick-action-icon income">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <button class="circular-action-btn" id="qa-btn-income">
+            <div class="action-circle-icon income">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
             </div>
-            <span class="quick-action-label">Pemasukan</span>
+            <span class="action-btn-title">Pemasukan</span>
           </button>
 
-          <button class="quick-action-btn" id="qa-btn-transfer">
-            <div class="quick-action-icon transfer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M16 3h5v5"></path>
-                <path d="M4 20L21 3"></path>
-                <path d="M21 16v5h-5"></path>
-                <path d="M15 15l6 6"></path>
-                <path d="M4 4l5 5"></path>
+          <button class="circular-action-btn" id="qa-btn-transfer">
+            <div class="action-circle-icon transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="17 1 21 5 17 9"></polyline>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                <polyline points="7 23 3 19 7 15"></polyline>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
               </svg>
             </div>
-            <span class="quick-action-label">Transfer</span>
+            <span class="action-btn-title">Transfer</span>
           </button>
 
-          <button class="quick-action-btn" id="qa-btn-debt">
-            <div class="quick-action-icon debt">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          <button class="circular-action-btn" id="qa-btn-debt">
+            <div class="action-circle-icon debt">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
               </svg>
             </div>
-            <span class="quick-action-label">Utang Piutang</span>
+            <span class="action-btn-title">Utang</span>
           </button>
         </div>
 
@@ -588,7 +556,7 @@
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
           <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
         </svg>
-        <span>Utang/Piutang</span>
+        <span>Utang</span>
       </button>
     </nav>
 
@@ -959,6 +927,6 @@
     <div id="toast-container" class="toast-container"></div>
   </div>
 
-  <script src="app.js?v=5.0.0"></script>
+  <script src="app.js?v=6.0.0"></script>
 </body>
 </html>
