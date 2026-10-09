@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=4.0.0">
 </head>
 <body>
   <div class="app-container" id="app">
@@ -927,6 +927,17 @@
             </div>
           </div>
 
+          <!-- Update Versi & Hapus Cache Tampilan -->
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="font-size: 0.95rem; margin-bottom: 4px;">Pembaruan Sistem & Cache</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+              Jika tampilan aplikasi belum berubah ke tema baru, ketuk tombol ini untuk membersihkan cache perangkat dan memuat versi terbaru seketika.
+            </p>
+            <button class="btn btn-secondary btn-block" id="btn-force-update-cache">
+              🔄 Perbarui & Muat Ulang Versi Terbaru
+            </button>
+          </div>
+
           <!-- Reset Data -->
           <div class="card" style="margin-bottom: 0; border-color: rgba(244, 63, 94, 0.3);">
             <h3 style="font-size: 0.95rem; margin-bottom: 4px; color: #fb7185;">Reset Bersih Semua Data</h3>
@@ -945,6 +956,6 @@
     <div id="toast-container" class="toast-container"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=4.0.0"></script>
 </body>
 </html>

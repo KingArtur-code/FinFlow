@@ -2034,6 +2034,29 @@
       });
     });
 
+    // Force Update & Purge Cache
+    const btnForceUpdate = document.getElementById('btn-force-update-cache');
+    if (btnForceUpdate) {
+      btnForceUpdate.addEventListener('click', async () => {
+        showToast('Memperbarui sistem & membersihkan cache...', 'info');
+        try {
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const reg of registrations) {
+              await reg.unregister();
+            }
+          }
+        } catch (err) {
+          console.warn('Pembersihan cache dilewati:', err);
+        }
+        window.location.reload(true);
+      });
+    }
+
     // Offline / Online detection
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
@@ -2054,10 +2077,19 @@
   // --- SERVICE WORKER (PWA) ---
   function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => {
             console.log('FinFlow Service Worker aktif:', reg.scope);
+            reg.update();
           })
           .catch(err => {
             console.log('Service Worker registrasi lewati:', err);
