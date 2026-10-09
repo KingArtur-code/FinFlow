@@ -575,7 +575,7 @@
     let html = '';
     for (const [dateStr, txs] of Object.entries(grouped)) {
       let dateLabel = formatShortDate(dateStr);
-      if (dateStr === todayStr) dateLabel = 'Hari Ini — ' + dateLabel;
+      if (dateStr === todayStr) dateLabel = 'Hari Ini • ' + dateLabel;
 
       const dayTotalExpense = txs.reduce((sum, t) => sum + (t.type === 'expense' || t.type === 'receivable_lend' || t.type === 'payable_repay' ? Number(t.amount) : 0), 0);
       const dayTotalIncome = txs.reduce((sum, t) => sum + (t.type === 'income' || t.type === 'receivable_repay' || t.type === 'payable_borrow' ? Number(t.amount) : 0), 0);
