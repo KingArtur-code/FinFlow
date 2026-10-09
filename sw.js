@@ -1,11 +1,11 @@
-const CACHE_NAME = 'finflow-cache-v4';
+const CACHE_NAME = 'finflow-cache-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './styles.css',
-  './styles.css?v=4.0.0',
+  './styles.css?v=5.0.0',
   './app.js',
-  './app.js?v=4.0.0',
+  './app.js?v=5.0.0',
   './manifest.json',
   './icon.svg'
 ];
